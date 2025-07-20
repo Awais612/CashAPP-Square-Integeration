@@ -57,6 +57,7 @@ interface CashAppPayButtonOptions {
 
 export default function Home() {
   const [amount, setAmount] = useState("10");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const appId = "sq0idp-jKJY_vd7lPiul-ekwDrTdw";
@@ -107,12 +108,11 @@ export default function Home() {
             const data = await res.json();
             alert(`✅ Payment ${data.payment?.status ?? "processed"}`);
           } else {
-            console.error("❌ Tokenization failed:", tokenResult.errors);
-            alert("❌ Tokenization failed");
+            setErrorMessage("Payment authorization failed.");
           }
         });
       } catch (err) {
-        console.error("❌ Error initializing Cash App Pay:", err);
+        setErrorMessage("Payment authorization failed.");
       }
     };
 
@@ -154,6 +154,10 @@ export default function Home() {
         </div>
 
         <div className={styles.cashAppButtonWrapper} id="cash-app-button"></div>
+
+        {errorMessage && (
+          <div className={styles.errorMessage}>{errorMessage}</div>
+        )}
 
         <p className={styles.badges}>
           <span className={styles.badge}>🔒 Secure Checkout</span>
