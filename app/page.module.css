@@ -1,0 +1,127 @@
+/* HomePage.module.css */
+
+.main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: linear-gradient(to bottom right, #f3f4f6, #d1d5db);
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+  background-color: #1e293b;
+  height: 600px;
+  max-height: 100vh;
+  color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.25);
+  padding: 1.5rem;
+}
+
+.offerBanner {
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #facc15, #ef4444);
+  color: black;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #22d3ee;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.description {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: inline-block;
+}
+
+.labelGray {
+  color: #9ca3af; /* gray-400 */
+}
+
+.select {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #334155; /* slate-700 */
+  color: white;
+  border: 1px solid #475569; /* slate-600 */
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+.select:focus {
+  outline: 2px solid #22d3ee; /* cyan-400 */
+  outline-offset: 2px;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.featureItem {
+  background-color: #1e293b; /* slate-800 */
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cashAppButtonWrapper {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.badges {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #d1d5db; /* gray-300 */
+}
+
+.badge {
+  display: inline-block;
+  background-color: #1e293b; /* slate-700 */
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  margin-right: 0.25rem;
+}
+
+.legalText {
+  font-size: 0.75rem;
+  color: #9ca3af; /* gray-400 */
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.legalLink {
+  text-decoration: underline;
+  color: inherit;
+  cursor: pointer;
+}
