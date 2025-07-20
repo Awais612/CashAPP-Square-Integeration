@@ -148,3 +148,65 @@
   font-weight: 500;
   text-align: center;
 }
+
+@media (max-width: 640px) {
+  .container {
+    max-width: 100%;
+    height: auto;
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .offerBanner {
+    width: 100%;
+    font-size: 1rem;
+    height: auto;
+    text-align: center;
+    padding: 0.5rem 1rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .description {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .featureItem {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+  }
+
+  .select {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .badge {
+    display: block;
+    margin: 0.25rem auto;
+  }
+
+  .legalText {
+    font-size: 0.7rem;
+    margin-top: 0.75rem;
+  }
+
+  .errorMessage {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+}
