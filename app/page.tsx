@@ -95,8 +95,8 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    const appId = "sq0idp-LMsowJbeJ3ktbvfu3hv-Bg";
-    const locationId = "LA8577X5T20EP";
+    const appId = "sandbox-sq0idb-gey1JKo8t_esOUunQPzYVA";
+    const locationId = "LA8X0CJRJZNX2";
 
     const initCashApp = async () => {
       if (!window.Square) {
@@ -143,6 +143,16 @@ export default function Home() {
             const data = await res.json();
             alert(`✅ Payment ${data.payment?.status ?? "processed"}`);
           } else {
+            alert(
+              `❌ Payment failed: ${tokenResult.errors
+                ?.map((e: unknown) => {
+                  if (typeof e === "object" && e !== null && "detail" in e) {
+                    return (e as { detail?: string }).detail;
+                  }
+                  return "";
+                })
+                .join(", ")}`
+            );
             setErrorMessage("Payment authorization failed.");
           }
         });
