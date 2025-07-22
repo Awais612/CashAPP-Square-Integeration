@@ -157,6 +157,7 @@ export default function Home() {
           }
         });
       } catch (err) {
+        alert(err);
         setErrorMessage("Payment authorization failed.");
       }
     };
