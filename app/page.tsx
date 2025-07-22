@@ -95,8 +95,8 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    const appId = "sandbox-sq0idb-gey1JKo8t_esOUunQPzYVA";
-    const locationId = "LA8X0CJRJZNX2";
+    const appId = "sq0idp-LMsowJbeJ3ktbvfu3hv-Bg";
+    const locationId = "LA8577X5T20EP";
 
     const initCashApp = async () => {
       if (!window.Square) {
