@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* ✅ Script still works here without "use client" */}
-        <Script src={squareSdkUrl} strategy="beforeInteractive" />
+        <Script src={squareSdkUrl} strategy="lazyOnload" />
       </head>
       <body suppressHydrationWarning>{children}</body>
     </html>

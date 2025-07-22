@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       idempotency_key: crypto.randomUUID(),
       source_id: body.sourceId,
       location_id: locationId,
+      autocomplete: true,
       amount_money: {
         amount: body.amount,
         currency: "USD",
@@ -32,6 +33,8 @@ export async function POST(request: NextRequest) {
   });
 
   const data = await response.json();
+
+  console.log("Square Sandbox Response", data);
 
   return new NextResponse(JSON.stringify(data), {
     status: 200,
