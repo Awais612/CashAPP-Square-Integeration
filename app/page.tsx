@@ -118,7 +118,7 @@ export default function Home() {
         });
 
         const cashAppPay = await payments.cashAppPay(paymentRequest, {
-          redirectURL: "https://polopackaging.com/thank-you",
+          redirectURL: "https://cash-app-square-integeration.vercel.app/",
           referenceId: crypto.randomUUID(),
         });
 
