@@ -95,13 +95,19 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    const appId = "sq0idp-LMsowJbeJ3ktbvfu3hv-Bg";
-    const locationId = "LA8577X5T20EP";
+    const appId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID;
+    const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
 
     const initCashApp = async () => {
       if (!window.Square) {
         console.warn("Square.js not ready, retrying...");
         setTimeout(initCashApp, 300);
+        return;
+      }
+
+      if (!appId || !locationId) {
+        setErrorMessage("Square Application ID or Location ID is missing.");
+        console.error("Missing Square credentials:", { appId, locationId });
         return;
       }
 
@@ -143,16 +149,7 @@ export default function Home() {
             const data = await res.json();
             alert(`✅ Payment ${data.payment?.status ?? "processed"}`);
           } else {
-            alert(
-              `❌ Payment failed: ${tokenResult.errors
-                ?.map((e: unknown) => {
-                  if (typeof e === "object" && e !== null && "detail" in e) {
-                    return (e as { detail?: string }).detail;
-                  }
-                  return "";
-                })
-                .join(", ")}`
-            );
+            alert(`❌ Payment failed`);
             setErrorMessage("Payment authorization failed.");
           }
         });
