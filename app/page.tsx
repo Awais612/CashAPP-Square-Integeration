@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"; // Adjust the path if needed
+import { useEffect, useRef, useState } from "react"; // Adjust the path if needed
 import styles from "./page.module.css";
 
 declare global {
@@ -38,6 +38,7 @@ interface CashAppPayInstance {
     selector: string,
     options?: CashAppPayButtonOptions
   ) => Promise<void>;
+  destroy?: () => Promise<void>;
   addEventListener: (
     type: "ontokenization",
     listener: (event: CustomEvent<{ tokenResult: TokenResult }>) => void
@@ -58,6 +59,7 @@ interface CashAppPayButtonOptions {
 export default function Home() {
   const [amount, setAmount] = useState("10");
   const [errorMessage, setErrorMessage] = useState("");
+  const cashAppPayRef = useRef<CashAppPayInstance | null>(null);
 
   const creditAmounts = [
     5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26,
@@ -107,7 +109,6 @@ export default function Home() {
 
       if (!appId || !locationId) {
         setErrorMessage("Square Application ID or Location ID is missing.");
-        console.error("Missing Square credentials:", { appId, locationId });
         return;
       }
 
@@ -122,6 +123,12 @@ export default function Home() {
             label: "Total",
           },
         });
+
+        // ✅ Destroy existing instance before creating new
+        if (cashAppPayRef.current) {
+          await cashAppPayRef.current.destroy?.();
+          cashAppPayRef.current = null;
+        }
 
         const cashAppPay = await payments.cashAppPay(paymentRequest, {
           redirectURL: "https://cash-app-square-integeration.vercel.app/",
@@ -142,7 +149,7 @@ export default function Home() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 sourceId: tokenResult.token,
-                amount: parseFloat(amount) * 100, // in cents
+                amount: parseFloat(amount) * 100,
               }),
             });
 
@@ -153,13 +160,22 @@ export default function Home() {
             setErrorMessage("Payment authorization failed.");
           }
         });
+
+        // ✅ Save instance
+        cashAppPayRef.current = cashAppPay;
       } catch (err) {
-        alert(err);
+        console.error("Cash App error:", err);
         setErrorMessage("Payment authorization failed.");
       }
     };
 
     initCashApp();
+
+    // Optional: clean up on unmount
+    return () => {
+      cashAppPayRef.current?.destroy?.();
+      cashAppPayRef.current = null;
+    };
   }, [amount]);
 
   return (
