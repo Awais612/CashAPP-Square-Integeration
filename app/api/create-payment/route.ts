@@ -14,47 +14,61 @@ export async function POST(request: NextRequest) {
       ? "https://connect.squareup.com"
       : "https://connect.squareupsandbox.com";
 
-  const response = await fetch(`${env}/v2/payments`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+  const paymentPayload = {
+    idempotency_key: crypto.randomUUID(),
+    source_id: body.sourceId,
+    location_id: locationId,
+    autocomplete: true,
+    amount_money: {
+      amount: body.amount,
+      currency: "USD",
     },
-    body: JSON.stringify({
-      idempotency_key: crypto.randomUUID(),
-      source_id: body.sourceId,
-      location_id: locationId,
-      autocomplete: true,
-      amount_money: {
-        amount: body.amount,
-        currency: "USD",
+  };
+
+  console.log("✅ Payment request received:", body);
+  console.log("🌍 Environment:", process.env.SQUARE_ENVIRONMENT);
+  console.log("📦 Request Payload:", JSON.stringify(paymentPayload));
+
+  try {
+    const response = await fetch(`${env}/v2/payments`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
-    }),
-  });
+      body: JSON.stringify(paymentPayload),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  console.log("Square Sandbox Response", data);
+    if (!response.ok) {
+      console.error("💥 Payment failed:", JSON.stringify(data, null, 2));
+      return new NextResponse(
+        JSON.stringify({
+          error: "Square payment failed",
+          details: data,
+        }),
+        { status: response.status }
+      );
+    }
 
-  return new NextResponse(JSON.stringify(data), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*", // Or replace * with your frontend domain
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
-  });
-}
+    console.log("💰 Payment succeeded:", JSON.stringify(data, null, 2));
 
-// Handle preflight requests
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*", // Or set specific origin
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
-  });
+    return new NextResponse(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  } catch (error) {
+    console.error("🔥 Unexpected error:", error);
+
+    return new NextResponse(
+      JSON.stringify({ error: "Unexpected server error", details: error }),
+      { status: 500 }
+    );
+  }
 }

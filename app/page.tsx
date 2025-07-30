@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react"; // Adjust the path if needed
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 
 declare global {
@@ -59,6 +59,7 @@ interface CashAppPayButtonOptions {
 export default function Home() {
   const [amount, setAmount] = useState("10");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const cashAppPayRef = useRef<CashAppPayInstance | null>(null);
 
   const creditAmounts = [
@@ -119,12 +120,11 @@ export default function Home() {
           countryCode: "US",
           currencyCode: "USD",
           total: {
-            amount: amount,
+            amount,
             label: "Total",
           },
         });
 
-        // ✅ Destroy existing instance before creating new
         if (cashAppPayRef.current) {
           await cashAppPayRef.current.destroy?.();
           cashAppPayRef.current = null;
@@ -144,34 +144,51 @@ export default function Home() {
           const { tokenResult } = event.detail;
 
           if (tokenResult.status === "OK") {
-            const res = await fetch("/api/create-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                sourceId: tokenResult.token,
-                amount: parseFloat(amount) * 100,
-              }),
-            });
+            setLoading(true);
+            setErrorMessage("");
 
-            const data = await res.json();
-            alert(`✅ Payment ${data.payment?.status ?? "processed"}`);
+            try {
+              const res = await fetch("/api/create-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  sourceId: tokenResult.token,
+                  amount: parseFloat(amount) * 100,
+                }),
+              });
+
+              const data = await res.json();
+
+              if (!res.ok) {
+                console.error("❌ Payment failed:", data);
+                alert("❌ Payment failed. Please try again.");
+                setErrorMessage(data.error || "Something went wrong.");
+                return;
+              }
+
+              alert(`✅ Payment ${data.payment?.status ?? "processed"}`);
+            } catch (err) {
+              console.error("❌ Unexpected error:", err);
+              alert("Something went wrong. Try again later.");
+              setErrorMessage("Unexpected error occurred.");
+            } finally {
+              setLoading(false);
+            }
           } else {
-            alert(`❌ Payment failed`);
+            alert("❌ Payment authorization failed.");
             setErrorMessage("Payment authorization failed.");
           }
         });
 
-        // ✅ Save instance
         cashAppPayRef.current = cashAppPay;
       } catch (err) {
         console.error("Cash App error:", err);
-        setErrorMessage("Payment authorization failed.");
+        setErrorMessage("Payment initialization failed.");
       }
     };
 
     initCashApp();
 
-    // Optional: clean up on unmount
     return () => {
       cashAppPayRef.current?.destroy?.();
       cashAppPayRef.current = null;
@@ -193,12 +210,13 @@ export default function Home() {
           📃 Select Credit Amount{" "}
           <span className={styles.labelGray}>(Min: $5 | Max: $500)</span>
         </label>
+
         <select
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className={styles.select}
+          disabled={loading}
         >
-          {/* Primary options */}
           <option value="10">$10</option>
           <option value="20">$20</option>
           <option value="40">$40</option>
@@ -207,11 +225,7 @@ export default function Home() {
           <option value="100">$100</option>
           <option value="200">$200</option>
           <option value="500">$500</option>
-
-          {/* Separator */}
           <option disabled>──────────</option>
-
-          {/* Additional values from array */}
           {creditAmounts.map((value) => (
             <option key={value} value={value}>
               ${value}
