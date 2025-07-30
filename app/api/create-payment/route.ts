@@ -8,11 +8,12 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
 
   const accessToken = process.env.SQUARE_ACCESS_TOKEN!;
+  console.log("Access token:", accessToken);
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!;
-  const env =
-    process.env.SQUARE_ENVIRONMENT === "production"
-      ? "https://connect.squareup.com"
-      : "https://connect.squareupsandbox.com";
+  // const env =
+  //   process.env.SQUARE_ENVIRONMENT === "production"
+  //     ? "https://connect.squareup.com"
+  //     : "https://connect.squareupsandbox.com";
 
   const paymentPayload = {
     idempotency_key: crypto.randomUUID(),
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
   console.log("📦 Request Payload:", JSON.stringify(paymentPayload));
 
   try {
-    const response = await fetch(`${env}/v2/payments`, {
+    const response = await fetch(`https://connect.squareup.com/v2/payments`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,

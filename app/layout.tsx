@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   description: "Best checkout experience using Square Cash App Pay.",
 };
 
-const isProd = process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === "production";
-const squareSdkUrl = isProd
-  ? "https://web.squarecdn.com/v1/square.js"
-  : "https://sandbox.web.squarecdn.com/v1/square.js";
+// const isProd = process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === "production";
+// const squareSdkUrl = isProd
+//   ? "https://web.squarecdn.com/v1/square.js"
+//   : "https://sandbox.web.squarecdn.com/v1/square.js";
 
 export default function RootLayout({
   children,
@@ -26,7 +26,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* ✅ Script still works here without "use client" */}
-        <Script src={squareSdkUrl} strategy="lazyOnload" />
+        <Script
+          src="https://web.squarecdn.com/v1/square.js"
+          strategy="lazyOnload"
+        />
       </head>
       <body suppressHydrationWarning>{children}</body>
     </html>
