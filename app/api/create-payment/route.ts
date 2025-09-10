@@ -5,28 +5,49 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
   }
 
-  const body = await request.json();
+  const { sourceId, amount } = await request.json().catch(() => ({} as any));
+
+  const amountCents = Number.isFinite(amount)
+    ? Number(amount)
+    : Number.parseInt(String(amount), 10);
+
+  if (!sourceId || !Number.isFinite(amountCents)) {
+    return NextResponse.json(
+      {
+        error: "Invalid request",
+        details: "sourceId and numeric amount (in cents) are required",
+      },
+      { status: 400 }
+    );
+  }
+
+  // Optional: enforce bounds that match your UI (min $5, max $500)
+  if (amountCents < 500 || amountCents > 50000) {
+    return NextResponse.json(
+      {
+        error: "Amount out of range",
+        details: "Must be between $5.00 and $500.00",
+      },
+      { status: 400 }
+    );
+  }
 
   const accessToken = process.env.SQUARE_ACCESS_TOKEN!;
   console.log("Access token:", accessToken);
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!;
-  // const env =
-  //   process.env.SQUARE_ENVIRONMENT === "production"
-  //     ? "https://connect.squareup.com"
-  //     : "https://connect.squareupsandbox.com";
 
   const paymentPayload = {
     idempotency_key: crypto.randomUUID(),
-    source_id: body.sourceId,
+    source_id: sourceId,
     location_id: locationId,
     autocomplete: true,
     amount_money: {
-      amount: body.amount,
+      amount: amountCents,
       currency: "USD",
     },
   };
 
-  console.log("✅ Payment request received:", body);
+  console.log("✅ Payment request received:", { sourceId, amountCents });
   console.log("🌍 Environment:", process.env.SQUARE_ENVIRONMENT);
   console.log("📦 Request Payload:", JSON.stringify(paymentPayload));
 
